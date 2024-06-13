@@ -1,7 +1,7 @@
 import sys
 import logging
 from aiohttp import web, ClientSession
-
+from aiohttp.web import HTTPException
 
 from monstr.client.client import Client, ClientPool
 from monstr.encrypt import Keys

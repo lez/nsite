@@ -44,6 +44,11 @@ async def upload_file(path, args, pubkey, sk):
     with open(path, "rb") as f:
         mtime = int(os.fstat(f.fileno()).st_mtime)
 
+        data = f.read()
+        h = hashlib.sha256()
+        h.update(data)
+        sha256 = h.digest().hex()
+
         async with Client(args.relay) as c:
             evs = await c.query({
                 'kinds': 34128,
@@ -55,17 +60,17 @@ async def upload_file(path, args, pubkey, sk):
                 evtime = int(time.mktime(ev.created_at.timetuple()))
                 if evtime == mtime:
                     print(f"Up to date [{path}]")
+
+                    #TODO: chk first!
+                    print(f"Storing file [{sha256}] on blossom.")
+                    await blossom.store(sk, data, BLOSSOM, sha256)
+
                     return
                 else:
                     print(f"Updating existing file mtime=[{ev.created_at}], ours=[{datetime.fromtimestamp(mtime)}].")
 
             else:
                 print(f"Uploading new file [{path}]")
-
-            data = f.read()
-            h = hashlib.sha256()
-            h.update(data)
-            sha256 = h.digest().hex()
 
             filemap_event = Event(
                 kind=34128,
