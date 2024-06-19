@@ -1,7 +1,6 @@
 import sys
 import logging
 from aiohttp import web, ClientSession
-from aiohttp.web import HTTPException
 
 from monstr.client.client import Client, ClientPool
 from monstr.encrypt import Keys
@@ -37,7 +36,7 @@ async def serve_file(request):
         pubkey = Keys(pub_k=npub).public_key_hex()
     except Exception as e:
         log.debug(str(e))
-        raise NotFoundError(reason="Subdomain is not a valid npub.")
+        raise web.HTTPNotFound(reason="Subdomain is not a valid npub.")
 
     async with Client(RELAY) as c:
         #TODO: make it a subscription, group authors per relay!
@@ -56,13 +55,12 @@ async def serve_file(request):
 
         async with ClientSession() as sess:
             async with sess.get(f"{BLOSSOM}/{sha256}") as resp:
-                if resp.status != 200:
-                    #TODO: add some reason
-                    raise HTTPException(
-                        status=resp.status, reason=f"Blossom returned {resp.status}")
+                if resp.status >= 300:
+                    t = await resp.text()
+                    return web.Response(
+                        status=resp.status, text=f"Blossom server returned [{t}]")
 
                 data = await resp.read()
-
                 return web.Response(content_type=resp.content_type, body=data)
 
 app = web.Application()
