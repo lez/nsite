@@ -33,7 +33,10 @@ Nostr event kind `34128` is used for mapping from the file path (that comes afte
 Install
 =======
 
-`pip install -r requirements.txt`
+```
+cp .env.example .env
+pip install -r requirements.txt
+```
 
 Upload
 ======

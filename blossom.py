@@ -20,6 +20,7 @@ async def store(sk, data, blossom_server, sha256, path):
         tags=[
             ["t", "upload"],
             ["x", sha256],
+            ["size", len(data)],
             ["expiration", "1777777777"]
         ]
     )

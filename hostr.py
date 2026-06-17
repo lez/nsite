@@ -1,13 +1,17 @@
+import os
 import sys
 import logging
 from aiohttp import web, ClientSession
+from dotenv import load_dotenv
 
 from monstr.client.client import Client, ClientPool
 from monstr.encrypt import Keys
 
-SERVER_DOMAIN = "nostr.hu"
-RELAY = "ws://127.0.0.1:8080"
-BLOSSOM = "http://127.0.0.1:3000"
+load_dotenv()
+
+SERVER_DOMAIN = os.getenv('SERVER_DOMAIN')
+RELAY = os.getenv('RELAY')
+BLOSSOM = os.getenv('BLOSSOM')
 FILEMAP_KIND = "34128"
 
 logging.basicConfig(level=logging.INFO)
@@ -68,4 +72,6 @@ app.add_routes([
     web.get("/", serve_file),
     web.get("/{path:.*}", serve_file)
 ])
-web.run_app(app, host='0.0.0.0', port=8000)
+
+if __name__ == "__main__":
+    web.run_app(app, host='0.0.0.0', port=8000)

@@ -7,13 +7,16 @@ import asyncio
 import hashlib
 import time
 from datetime import datetime
+from dotenv import load_dotenv
 
 from monstr.encrypt import Keys
 from monstr.client.client import Client
 from monstr.event.event import Event
 
-RELAY = "wss://relay.magnifiq.tech" # Right now it's hardcoded
-BLOSSOM = "https://blossom.nostr.hu" # Same here.
+load_dotenv()
+
+RELAY = os.getenv('RELAY')
+BLOSSOM = os.getenv('BLOSSOM')
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
